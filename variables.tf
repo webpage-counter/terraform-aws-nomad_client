@@ -29,7 +29,7 @@ variable "IP" {
 
 variable "server_count" {
   description = "Count of Nomad servers in DC1."
-  default     = "3"
+  default     = "1"
 }
 
 variable "join_wan" {
