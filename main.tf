@@ -44,7 +44,7 @@ data "template_file" "var" {
 }
 
 # Below are the 3 Consul servers and 1 consul client.
-resource "aws_instance" "nomad_server" {
+resource "aws_instance" "nomad_client" {
   ami                         = var.ami
   instance_type               = var.instance_type
   subnet_id                   = data.terraform_remote_state.nw.outputs.private_subnets[2]
@@ -58,7 +58,7 @@ resource "aws_instance" "nomad_server" {
   depends_on                  = [data.terraform_remote_state.nw]
 
   tags = {
-    Name     = "nomad-server${count.index + 1}"
+    Name     = "nomad-client${count.index + 1}"
     consul   = var.dcname
     nomad   = var.dcname
     join_wan = var.join_wan
