@@ -40,6 +40,7 @@ data "template_file" "var" {
     var2         = "$(hostname)"
     IP           = "$(hostname -I | cut -d \" \" -f1)"
     JOIN_WAN     = var.join_wan
+    dbpass       = var.db_pass
   }
 }
 
