@@ -2,6 +2,9 @@ variable "instance_type" {
   description = "Specify the instance type."
 }
 
+variable "db_pass" {
+  description = "Specify the instance type."
+}
 
 variable "ami" {
   description = "AMI IDs based on if node is a client or a server"
