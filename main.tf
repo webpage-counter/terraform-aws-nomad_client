@@ -69,8 +69,7 @@ resource "aws_instance" "nomad_client" {
 
 resource "aws_elb" "wpc-lb" {
   name               = "webpage-counter-lb"
-  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
-
+  subnets            = data.terraform_remote_state.nw.outputs.private_subnets[2]
   listener {
     instance_port     = 9999
     instance_protocol = "http"
