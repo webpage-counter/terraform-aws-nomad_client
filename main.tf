@@ -93,7 +93,7 @@ resource "aws_elb" "wpc-lb" {
     lb_protocol       = "http"
   }
 
-  instances = ["${aws_instance.nomad_client.id}"]
+  instances = ["${aws_instance.nomad_client.*.id}"]
 
   tags = {
     Name = "webpage-counter-lb"
