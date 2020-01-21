@@ -68,8 +68,8 @@ resource "aws_instance" "nomad_client" {
 }
 
 
-resource "aws_elb" "bar" {
-  name               = "foobar-terraform-elb"
+resource "aws_elb" "wpc-lb" {
+  name               = "webpage-counter-lb"
   availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
 
   listener {
@@ -104,6 +104,9 @@ resource "aws_elb" "bar" {
 
 # Outputs the instances public ips.
 
+output "lb" {
+  value = aws_elb.wpc-lb.dns_name
+}
 
 output "ami" {
   value = var.ami
