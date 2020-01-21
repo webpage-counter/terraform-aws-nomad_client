@@ -3,7 +3,7 @@ variable "instance_type" {
 }
 
 variable "db_pass" {
-  description = "Specify the instance type."
+  description = "pass of the db"
 }
 
 variable "ami" {
