@@ -53,7 +53,7 @@ resource "aws_instance" "nomad_client" {
   iam_instance_profile        = data.terraform_remote_state.consul.outputs.instance_profile
   private_ip                  = "${var.IP["client"]}${count.index + 1}"
   key_name                    = "denislav_key_pair"
-  associate_public_ip_address = false  
+  associate_public_ip_address = false
   count                       = var.server_count
   user_data                   = data.template_file.var.rendered
   depends_on                  = [data.terraform_remote_state.nw]
@@ -61,11 +61,46 @@ resource "aws_instance" "nomad_client" {
   tags = {
     Name     = "nomad-client${count.index + 1}"
     consul   = var.dcname
-    nomad   = var.dcname
+    nomad    = var.dcname
     join_wan = var.join_wan
   }
 
 }
+
+
+resource "aws_elb" "bar" {
+  name               = "foobar-terraform-elb"
+  availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1e", "us-east-1f"]
+
+  listener {
+    instance_port     = 9999
+    instance_protocol = "http"
+    lb_port           = 9999
+    lb_protocol       = "http"
+  }
+
+  listener {
+    instance_port     = 8500
+    instance_protocol = "http"
+    lb_port           = 8500
+    lb_protocol       = "http"
+  }
+
+  listener {
+    instance_port     = 4646
+    instance_protocol = "http"
+    lb_port           = 4646
+    lb_protocol       = "http"
+  }
+
+  instances = ["${aws_instance.nomad_client.id}"]
+
+  tags = {
+    Name = "webpage-counter-lb"
+  }
+}
+
+
 
 # Outputs the instances public ips.
 
