@@ -51,15 +51,14 @@ resource "aws_instance" "nomad_client" {
   subnet_id                   = data.terraform_remote_state.nw.outputs.private_subnets[2]
   vpc_security_group_ids      = ["${data.terraform_remote_state.nw.outputs.pubic_sec_group}"]
   iam_instance_profile        = data.terraform_remote_state.consul.outputs.instance_profile
-  private_ip                  = "${var.IP["client"]}${count.index + 1}"
+  private_ip                  = "${var.IP["client"]}1"
   key_name                    = "denislav_key_pair"
   associate_public_ip_address = false
-  count                       = var.server_count
   user_data                   = data.template_file.var.rendered
   depends_on                  = [data.terraform_remote_state.nw]
 
   tags = {
-    Name     = "nomad-client${count.index + 1}"
+    Name     = "nomad-client1"
     consul   = var.dcname
     nomad    = var.dcname
     join_wan = var.join_wan
@@ -93,7 +92,7 @@ resource "aws_elb" "wpc-lb" {
     lb_protocol       = "http"
   }
 
-  instances = ["${aws_instance.nomad_client.*.id}"]
+  instances = ["${aws_instance.nomad_client.id}"]
 
   tags = {
     Name = "webpage-counter-lb"
