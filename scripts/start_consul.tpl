@@ -372,7 +372,7 @@ job "web_app" {
   }  
 
   group "counter" {
-    count = 2
+    count = 3
     network {
       mode = "bridge"
 
@@ -446,8 +446,11 @@ case "${DCNAME}" in
             sudo systemctl start nomad >/dev/null
             sleep 3
             create_webapp_job
+            sleep 2
             create_fabio_job
+            sleep 5
             nomad run /tmp/fabio.nomad
+            sleep 3
             nomad run /tmp/web_app.nomad
         fi
     fi
