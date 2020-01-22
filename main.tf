@@ -49,7 +49,7 @@ resource "aws_instance" "nomad_client" {
   ami                         = var.ami
   instance_type               = var.instance_type
   subnet_id                   = data.terraform_remote_state.nw.outputs.private_subnets[2]
-  vpc_security_group_ids      = ["${data.terraform_remote_state.nw.outputs.pubic_sec_group}"]
+  vpc_security_group_ids      = data.terraform_remote_state.nw.outputs.pubic_sec_group
   iam_instance_profile        = data.terraform_remote_state.consul.outputs.instance_profile
   private_ip                  = "${var.IP["client"]}1"
   key_name                    = "denislav_key_pair"
@@ -66,44 +66,49 @@ resource "aws_instance" "nomad_client" {
 
 }
 
-
-resource "aws_elb" "wpc-lb" {
+resource "aws_lb" "lb" {
   name               = "webpage-counter-lb"
-  subnets            = data.terraform_remote_state.nw.outputs.private_subnets
-  listener {
-    instance_port     = 9999
-    instance_protocol = "http"
-    lb_port           = 9999
-    lb_protocol       = "http"
-  }
-
-  listener {
-    instance_port     = 8500
-    instance_protocol = "http"
-    lb_port           = 8500
-    lb_protocol       = "http"
-  }
-
-  listener {
-    instance_port     = 4646
-    instance_protocol = "http"
-    lb_port           = 4646
-    lb_protocol       = "http"
-  }
-
-  instances = ["${aws_instance.nomad_client.id}"]
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = data.terraform_remote_state.nw.outputs.pubic_sec_group
+  subnets            = data.terraform_remote_state.nw.outputs.public_subnets
 
   tags = {
-    Name = "webpage-counter-lb"
+    Environment = "production"
   }
 }
 
+resource "aws_lb_target_group" "tg" {
+  name     = "wpc-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = data.terraform_remote_state.nw.outputs.VPC_ID
+  health_check {
+    matcher = 200
+    path    = "/health"
+  }
+}
 
+resource "aws_lb_target_group_attachment" "test" {
+  target_group_arn = aws_lb_target_group.tg.arn
+  target_id        = aws_instance.nomad_client.id
+  port             = 9999
+}
 
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.lb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg.arn
+  }
+}
 # Outputs the instances public ips.
 
 output "lb" {
-  value = aws_elb.wpc-lb.dns_name
+  value = aws_lb.lb.dns_name
 }
 
 output "ami" {
