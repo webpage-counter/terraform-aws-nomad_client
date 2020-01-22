@@ -272,14 +272,14 @@ create_client_conf () {
 
         advertise {
             # Defaults to the first private IP address.
-            http = "{{ GetInterfaceIP \"enp0s8\" }}"
-            rpc  = "{{ GetInterfaceIP \"enp0s8\" }}"
-            serf = "{{ GetInterfaceIP \"enp0s8\" }}"
+            http = "{{ GetInterfaceIP \"eth0\" }}"
+            rpc  = "{{ GetInterfaceIP \"eth0\" }}"
+            serf = "{{ GetInterfaceIP \"eth0\" }}"
         }
 
         client {
             enabled = true
-            network_interface = "enp0s8"
+            network_interface = "eth0"
             server_join {
                 retry_join = ["provider=aws tag_key=nomad tag_value=${DCNAME}"]
                 retry_max = 3
@@ -414,7 +414,7 @@ job "web_app" {
     task "app" {
       driver = "docker"      
       config {
-        image = "denov/webpage-counter:0.1.0" 
+        image = "denov/webpage-counter:0.1.1" 
       }
     }
   }
@@ -439,7 +439,7 @@ case "${DCNAME}" in
         sudo systemctl start nomad >/dev/null
         sleep 5
     else
-        if [[ "${var2}" =~ "ip-10-123-3" || "${var2}" =~ "ip-10-123-3" ]]; then
+        if [[ "${var2}" =~ "ip-10-123-3" || "${var2}" =~ "ip-10-123-10" ]]; then
             killall nomad
             create_client_conf
             sudo systemctl enable nomad >/dev/null
