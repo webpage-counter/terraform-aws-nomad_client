@@ -108,7 +108,7 @@ resource "aws_lb_listener" "front_end2" {
 # Outputs the instances public ips.
 
 output "lb2" {
-  value = aws_lb.lb.dns_name
+  value = aws_lb.lb2.dns_name
 }
 
 output "ami" {
