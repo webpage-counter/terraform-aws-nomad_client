@@ -66,50 +66,50 @@ resource "aws_instance" "nomad_client" {
 
 }
 
-// resource "aws_lb" "lb" {
-//   name               = "webpage-counter-lb"
-//   internal           = false
-//   load_balancer_type = "application"
-//   security_groups    = data.terraform_remote_state.nw.outputs.pubic_sec_group
-//   subnets            = data.terraform_remote_state.nw.outputs.public_subnets
+resource "aws_lb" "lb2" {
+  name               = "webpage-counter-lb-app"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = data.terraform_remote_state.nw.outputs.pubic_sec_group
+  subnets            = data.terraform_remote_state.nw.outputs.public_subnets
 
-//   tags = {
-//     Environment = "production"
-//   }
-// }
+  tags = {
+    Environment = "production_app"
+  }
+}
 
-// resource "aws_lb_target_group" "tg" {
-//   name     = "wpc-tg"
-//   port     = 80
-//   protocol = "HTTP"
-//   vpc_id   = data.terraform_remote_state.nw.outputs.VPC_ID
-//   health_check {
-//     matcher = 200
-//     path    = "/health"
-//   }
-// }
+resource "aws_lb_target_group" "tg2" {
+  name     = "wpc-tg2"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = data.terraform_remote_state.nw.outputs.VPC_ID
+  health_check {
+    matcher = 200
+    path    = "/health"
+  }
+}
 
-// resource "aws_lb_target_group_attachment" "test" {
-//   target_group_arn = aws_lb_target_group.tg.arn
-//   target_id        = aws_instance.nomad_client.id
-//   port             = 9999
-// }
+resource "aws_lb_target_group_attachment" "test" {
+  target_group_arn = aws_lb_target_group.tg2.arn
+  target_id        = aws_instance.nomad_client.id
+  port             = 9999
+}
 
-// resource "aws_lb_listener" "front_end" {
-//   load_balancer_arn = aws_lb.lb.arn
-//   port              = "80"
-//   protocol          = "HTTP"
+resource "aws_lb_listener" "front_end2" {
+  load_balancer_arn = aws_lb.lb2.arn
+  port              = "80"
+  protocol          = "HTTP"
 
-//   default_action {
-//     type             = "forward"
-//     target_group_arn = aws_lb_target_group.tg.arn
-//   }
-// }
-// # Outputs the instances public ips.
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg2.arn
+  }
+}
+# Outputs the instances public ips.
 
-// output "lb" {
-//   value = aws_lb.lb.dns_name
-// }
+output "lb2" {
+  value = aws_lb.lb.dns_name
+}
 
 output "ami" {
   value = var.ami
