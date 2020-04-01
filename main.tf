@@ -122,11 +122,3 @@ output "dcname" {
 output "IP_client" {
   value = var.IP["client"]
 }
-
-output "data_rendered" {
-  value      = data.template_file.var.rendered
-  depends_on = [data.template_file.var]
-}
-
-
-
